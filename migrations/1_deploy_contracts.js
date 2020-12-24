@@ -1,7 +1,6 @@
-var MultiSigSimple = artifacts.require("MultiSigSimple");
-var MultiSigSingleTransaction = artifacts.require("MultiSigSingleTransaction")
+var MultiSig2of3 = artifacts.require("MultiSig2of3");
 
-module.exports = function(deployer) {
-    deployer.deploy(MultiSigSimple)
-    deployer.deploy(MultiSigSingleTransaction)
+module.exports = function(deployer, network, accounts) {
+    var allWallets = accounts.slice(0,3)
+    deployer.deploy(MultiSig2of3, allWallets)
 };
