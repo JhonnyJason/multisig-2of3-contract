@@ -1,0 +1,26 @@
+{
+  "name": "jhonnyjason-token",
+  "version": "1.0.0",
+  "description": "truffle suite around deploying and testing the JhonnyJason Token",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "truffle test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JhonnyJason/jhonnyjason-token.git"
+  },
+  "author": "",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/JhonnyJason/jhonnyjason-token/issues"
+  },
+  "homepage": "https://github.com/JhonnyJason/jhonnyjason-token#readme",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "truffle-hdwallet-provider": "^1.0.17"
+  }
+}
