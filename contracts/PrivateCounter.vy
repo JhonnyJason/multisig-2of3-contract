@@ -1,12 +1,13 @@
 # @version ^0.2.8
 
 ############################################################
-privateCounts: HashMap[address, uint256]
+privateCounts: public(HashMap[address, uint256])
+iExist: bool
 
 ############################################################
 @external
 def __init__():
-    return
+    self.iExist = True
 
 ############################################################
 @external

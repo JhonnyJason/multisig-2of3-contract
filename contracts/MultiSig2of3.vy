@@ -97,15 +97,7 @@ def getSendEtherMessage(_amount:uint256) -> Bytes[96]:
 
 @external
 @view
-def getTransactionMessage(_transaction: Bytes[1024]) -> Bytes[96]:
-    _transactionHash: bytes32 = keccak256(_transaction)
-    _sender: bytes32 = convert(msg.sender, bytes32)
-    _messageBytes: Bytes[96] = concat(_transactionHash, self.ponce, _sender)
-    return _messageBytes
-
-@external
-@view
-def getTransactionMessageB(_target:address, _sent_value: uint256, _data: Bytes[1024]) -> Bytes[96]:
+def getTransactionMessage(_target:address, _sent_value: uint256, _data: Bytes[256]) -> Bytes[96]:
     _targetBytes: bytes32 = convert(_target, bytes32)
     _valueBytes: bytes32 = convert(_sent_value, bytes32)
     _messageHash: bytes32 = keccak256(concat(_targetBytes, _valueBytes, _data))
@@ -213,39 +205,7 @@ def sendEther(_to:address, _amount:uint256, _v:uint256, _r:uint256, _s:uint256) 
     return True
 
 @external
-def doTransaction(_transaction:Bytes[1024], _v:uint256, _r:uint256, _s:uint256) -> Bytes[32]:
-    assert not self.incomplete, "There is a wallet missing!"
-    
-    _sender: bytes32 = convert(msg.sender, bytes32)
-    _hash: bytes32 = keccak256(concat(
-        PREFIX, 
-        keccak256(_transaction), 
-        self.ponce, 
-        _sender
-        ))
-
-    _signer: address = ecrecover(_hash, _v, _r, _s)
-
-    ########################################################
-    assert msg.sender != _signer, "Sender is supposed to not be the signer!"
-    assert self.relevantWallets[msg.sender], "Sender has no Authority here!"
-    assert self.relevantWallets[_signer], "Signer has no Authority here!"
-    #  Hurray! We have 2 distinct approvers!    
-
-    _to: address = extract32(_transaction, 0, output_type=address)
-    _value: uint256 = extract32(_transaction, 32, output_type=uint256)
-    _len: uint256 = len(_transaction) - 64
-    _data: Bytes[1024] = slice(_transaction, 64, _len)
-
-    return raw_call(
-        _to,
-        _data,
-        max_outsize=32,
-        value=_value
-    )
-    
-@external
-def doTransactionB(_target:address, _sent_value: uint256, _data:Bytes[1024], _v:uint256, _r:uint256, _s:uint256) -> Bytes[32]:
+def doTransaction(_target:address, _sent_value: uint256, _data:Bytes[256], _v:uint256, _r:uint256, _s:uint256) -> Bytes[32]:
     assert not self.incomplete, "There is a wallet missing!"
     
     _sender: bytes32 = convert(msg.sender, bytes32)

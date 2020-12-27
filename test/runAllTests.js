@@ -208,43 +208,37 @@ contract("MultiSig2of3", (accounts) => {
     it("...be able to do an arbitrary transaction.", async () => {
         const c = await MultiSig2of3.deployed()
         const cc = await PrivateCounter.deployed()
+        const ccAddress = cc.address
         const ccJSON = JSON.parse(fs.readFileSync("./build/contracts/PrivateCounter.json", "utf-8"))
-        const web3CC = new web3.eth.Contract(ccJSON.abi, cc.address)
+        const web3CC = new web3.eth.Contract(ccJSON.abi, ccAddress)
 
         const w0 = accounts[0]
         const w1 = accounts[1]
         const w2 = accounts[2]
         const w3 = accounts[3]
         
-        const Iwork = await web3CC.methods.doIwork().call({from:w1, gas:100000000000000000, gasPrice:20000000000})
-        console.log(Iwork)
-
-        const ccContractBefore = BigInt(await cc.getPrivateCounts(c.address))
-        const ccSenderBefore = BigInt(await cc.getPrivateCounts(w1).call())
-        console.log(ccContractBefore.toString())
-        console.log(ccSenderBefore.toString())
+        const ccContractBefore = BigInt(await cc.privateCounts(c.address))
+        const ccSenderBefore = BigInt(await cc.privateCounts(w1))
         const desiredCCSenderAfter = ccSenderBefore
-        const desiredCCContractAfter = ccContractBefore + 1n
+        const desiredCCContractAfter = ccContractBefore + 5n
 
-        const transactionData = web3CC.methods.plusplus().encodeABI()
-        console.log(transactionData)
-
-        const addressPadding = "0x000000000000000000000000"
-        const transactionOneArg = addressPadding + cc.address.slice(2) + "0000000000000000000000000000000000000000000000000000000000000000" + transactionData.slice(2)
+        const transactionData = web3CC.methods.addFourNumbers(1,1,1,2).encodeABI()
 
         // sent by w1 signed by w0
-        var message = await c.getTransactionMessageB(cc.address, 0, transactionData, {from:w1})
+        var message = await c.getTransactionMessage(cc.address, 0, transactionData, {from:w1})
+        
         var signature0 = await getSignature(message, w0)
         var {v, r, s} = getSignatureParams(signature0)
         
-        var result = await c.doTransactionB(cc.address, 0, transactionData, v, r, s,{from:w1})
+        var result = await c.doTransaction(cc.address, 0, transactionData, v, r, s,{from:w1})
         console.log(result.receipt.gasUsed)
 
 
-        // const ccContractAfter = BigInt(await cc.getPrivateCounts(c.address))
-        // const ccSenderAfter = BigInt(await cc.getPrivateCounts(w1))
-        // assert.equal(ccContractAfter,desiredCCContractAfter, "The count of the contract did not increase!")
-        // assert.equal(ccSenderAfter, desiredCCSenderAfter, "The senders count did not stay the same!")
+        const ccContractAfter = BigInt(await cc.getPrivateCounts(c.address))
+        const ccSenderAfter = BigInt(await cc.getPrivateCounts(w1))
+        assert.equal(ccContractAfter,desiredCCContractAfter, "The count of the contract did not increase!")
+        assert.equal(ccSenderAfter, desiredCCSenderAfter, "The senders count did not stay the same!")
+
     })
 
 })
