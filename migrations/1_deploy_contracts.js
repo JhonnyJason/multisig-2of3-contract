@@ -1,4 +1,4 @@
-var MultiSig2of3 = artifacts.require("MultiSig2of3");
+var MultiSig2of3 = artifacts.require("MultiSig2of3")
 var PrivateCounter = artifacts.require("PrivateCounter")
 
 module.exports = function(deployer, network, accounts) {
