@@ -4,10 +4,10 @@ const MultiSig2of3 = artifacts.require("MultiSig2of3")
 const PrivateCounter = artifacts.require("PrivateCounter")
 
 
-const walletMissingMessage = "There is a wallet missing!"
-const invalidSenderMessage = "Sender has no Authority here!"
-const invalidSignatureMessage = "Signature is invalid!"
-const signerIsSenderMessage = "Sender cannot be the signer!"
+const walletMissingMessage = "Wallet Missing"
+const invalidSenderMessage = "Invalid Sender"
+const invalidSignatureMessage = "Invalid Signature"
+const signerIsSenderMessage = "Sender is Signer"
 
 
 function repairSignatureV(signature) {
@@ -81,7 +81,7 @@ contract("MultiSig2of3", (accounts) => {
     //############################################################
     it("...have all initial wallets.", async () => {
         const c = await MultiSig2of3.deployed()
-
+        
         const isComplete = await c.isComplete()        
         assert.equal(isComplete, true, "Did not have isComplete being true!")
 
@@ -101,6 +101,7 @@ contract("MultiSig2of3", (accounts) => {
 
         assert.equal(hasWallet3, false, "Wallet 3 was relevant!")
     })
+
     //############################################################
     it("...not be able to do invalid requests.", async () => {
         const c = await MultiSig2of3.deployed()

@@ -1,11 +1,12 @@
 # @version ^0.2.8
 
+CONTRACT_TYPE: constant(String[12]) = "MultiSig2of3"
 ############################################################
-WALLET_MISSING: constant(String[26]) = "There is a wallet missing!"
+WALLET_MISSING: constant(String[14]) = "Wallet Missing"
 
-INVALID_SENDER: constant(String[29]) = "Sender has no Authority here!"
-INVALID_SIGNER: constant(String[22]) = "Signature is invalid!"
-SIGNER_IS_SENDER: constant(String[28]) = "Sender cannot be the signer!"
+INVALID_SENDER: constant(String[14]) = "Invalid Sender"
+INVALID_SIGNER: constant(String[17]) = "Invalid Signature"
+SIGNER_IS_SENDER: constant(String[16]) = "Sender is Signer"
 
 ############################################################
 PREFIX: constant(Bytes[28]) = 0x19457468657265756d205369676e6564204d6573736167653a0a3936
@@ -45,6 +46,11 @@ def __default__():
 @view
 def isComplete() -> bool:
     return not self.incomplete
+
+@external
+@view
+def type() -> String[12]:
+    return CONTRACT_TYPE
 
 ############################################################
 # @external
@@ -111,7 +117,6 @@ def isComplete() -> bool:
 #region writeFunctions
 
 ############################################################
-#region add/remove wallets
 @external
 def addAuthorizedWallet(_wallet:address, _v:uint256, _r:uint256, _s:uint256) -> bool:
     assert _wallet != ZERO_ADDRESS, "Cannot add ZERO_ADDRESS!"
@@ -174,8 +179,7 @@ def removeAuthorizedWallet(_wallet: address, _v:uint256, _r:uint256, _s:uint256)
     self.ponce = _hash
     return True
 
-#endregion
-
+############################################################
 @external
 def sendEther(_to:address, _amount:uint256, _v:uint256, _r:uint256, _s:uint256) -> bool:
     assert not self.incomplete, WALLET_MISSING
@@ -203,6 +207,7 @@ def sendEther(_to:address, _amount:uint256, _v:uint256, _r:uint256, _s:uint256) 
     self.ponce = _hash
     return True
 
+############################################################
 @external
 def doTransaction(_target:address, _sent_value: uint256, _data:Bytes[256], _v:uint256, _r:uint256, _s:uint256) -> Bytes[32]:
     assert not self.incomplete, WALLET_MISSING
